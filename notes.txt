@@ -1,3 +1,6 @@
 11/21
 -upload.html and appy.py are set up for uploading videos. working on video playback - 3:50pm
 -finished playback.html for video playback - 3:58pm
+
+11/24
+-added playback skeleton button toggle and logic - 12:30pm
