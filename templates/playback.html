@@ -1,76 +1,68 @@
 <!DOCTYPE html>
-
-<!-- Video playback page-->
-
-
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mark Jump Timing</title>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
-    <script>
-        let takeoffTime = null;
-        let landingTime = null;
-
-        function markTakeoff(video) {
-            // Get takeoff time from video time.
-            takeoffTime = video.currentTime;
-            document.getElementById('takeoff-display').innerText = `Takeoff Time: ${takeoffTime.toFixed(2)}s`;
-        }
-
-        const GRAVITY = 9.8;
-
-        function markLanding(video) {
-            // Get landing time from the video time.
-            landingTime = video.currentTime;
-            document.getElementById('landing-display').innerText = `Landing Time: ${landingTime.toFixed(2)}s`;
-
-            // If both times are marked, calculate airtime and height.
-            if (takeoffTime !== null && landingTime !== null) {
-                const airtime = landingTime - takeoffTime;
-                document.getElementById('airtime-display').innerText = `Airtime: ${airtime.toFixed(2)}s`;
-
-                // Calculate vertical height in meters from airtime seconds difference.
-                const verticalHeightMeters = (GRAVITY * Math.pow(airtime, 2)) / 8;
-
-                // Convert vertical meters height to inches.
-                const verticalHeightInches = verticalHeightMeters * 39.3701;
-
-                document.getElementById('height-display').innerText =
-                    `Vertical Jump Height: ${verticalHeightInches.toFixed(2)} inches`;
-            }
-        }
-    </script>
+    <title>Vertical Jump Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
-<body>
-    <!-- Video playback player -->
-    <h1>Uploaded Video Playback with Pose Estimation</h1>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+    <div class="w-full max-w-5xl bg-white shadow-md rounded-lg p-6 flex flex-col items-center gap-6">
 
-    <!-- Video and Canvas for Pose Overlay -->
-    <div style="position: relative; width: 640px; height: 360px;">
-        <video id="videoPlayer" width="640" height="360" controls>
-            <source src="{{ video_url }}" type="video/mp4">
-            Your browser does not support the video tag.
-        </video>
-        <canvas id="overlayCanvas" width="640" height="360" style="position: absolute; top: 0; left: 0; pointer-events: none;"></canvas>
+        <!-- Title -->
+        <h1 class="text-2xl font-bold text-gray-700 text-center">
+            Vertical Jump Analysis
+        </h1>
+
+        <!-- Main Content -->
+        <div class="flex flex-col lg:flex-row items-center justify-between gap-6 w-full">
+
+            <!-- Video Section -->
+            <div class="flex-1 flex items-center justify-center">
+                <video
+                    id="videoPlayer"
+                    class="w-[400px] h-auto rounded-lg border shadow-md"
+                    controls>
+                    <source src="{{ video_url }}" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="w-full lg:w-1/3 flex flex-col items-center justify-center h-full">
+                <div class="flex flex-col gap-4">
+                    <button
+                        onclick="markTakeoff()"
+                        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 w-full">
+                        Mark Takeoff
+                    </button>
+                    <button
+                        onclick="markLanding()"
+                        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 w-full">
+                        Mark Landing
+                    </button>
+                    <button
+                        onclick="toggleSlowMotion()"
+                        class="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 w-full">
+                        Toggle Slow Motion
+                    </button>
+                </div>
+
+                <div class="bg-gray-50 p-4 rounded-lg shadow-sm w-full mt-6">
+                    <p id="takeoff-display" class="mb-2"><span class="font-semibold">Takeoff Time:</span> Not marked</p>
+                    <p id="landing-display" class="mb-2"><span class="font-semibold">Landing Time:</span> Not marked</p>
+                    <p id="airtime-display" class="mb-2"><span class="font-semibold">Airtime:</span> Not calculated</p>
+                    <p id="height-display"><span class="font-semibold">Vertical Jump Height:</span> Not calculated</p>
+                </div>
+
+                <div class="mt-4 text-center">
+                    <a href="/" class="text-blue-500 underline">Upload Another Video</a>
+                </div>
+            </div>
+
+        </div>
     </div>
-    <br>
-    <br>
-
-    <!-- Video buttons -->
-    <button onclick="markTakeoff(document.getElementById('videoPlayer'))">Mark Takeoff</button>
-    <button onclick="markLanding(document.getElementById('videoPlayer'))">Mark Landing</button>
-    <button onclick="toggleSkeleton()">Toggle Skeleton</button>
-
-    <p id="takeoff-display">Takeoff Time: Not marked</p>
-    <p id="landing-display">Landing Time: Not marked</p>
-    <p id="airtime-display">Airtime: Not calculated</p>
-    <p id="height-display">Vertical Jump Height: Not calculated</p>
-    <p>Skeleton Overlay: <span id="skeleton-status">On</span></p>
-    <br>
-    <a href="/">Upload Another Video</a>
 
     <script src="/static/js/pose_estimation.js"></script>
 </body>
